@@ -79,13 +79,13 @@ for alias in selected_aliases:
         label="Temperature",
         value=f"{latest['temperature']:.1f}℃",
         delta=f"{latest['temperature'] - previous['temperature']:.1f}℃",
-        delta_color="off"
+        delta_color="off",
     )
     col3.metric(
         label="Humidity",
         value=f"{latest['humidity']:.1f}%",
         delta=f"{latest['humidity'] - previous['humidity']:.1f}%",
-        delta_color="off"
+        delta_color="off",
     )
 
 
@@ -132,7 +132,11 @@ st.plotly_chart(fig)
 
 # RSSIの時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
-    filtered_df, x="created_at", y="rssi", color="alias", title="RSSI",
+    filtered_df,
+    x="created_at",
+    y="rssi",
+    color="alias",
+    title="RSSI",
     **line_kwargs,
 )
 st.plotly_chart(fig)
