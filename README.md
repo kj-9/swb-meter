@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/swb-meter.svg)](https://pypi.org/project/swb-meter/)
 [![Changelog](https://img.shields.io/github/v/release/kj-9/swb-meter?include_prereleases&label=changelog)](https://github.com/kj-9/swb-meter/releases)
-[![Tests](https://github.com/kj-9/swb-meter/actions/workflows/test.yml/badge.svg)](https://github.com/kj-9/swb-meter/actions/workflows/test.yml)
+[![Tests](https://github.com/kj-9/swb-meter/actions/workflows/test.yml/badge.svg)](https://github.com/kj-9/swb-meter/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/kj-9/swb-meter/blob/master/LICENSE)
 
 A cli tool to gather [switchbot meters'](https://www.switchbot.jp/products/switchbot-meter) data and writes to sqlite.
@@ -10,7 +10,7 @@ A cli tool to gather [switchbot meters'](https://www.switchbot.jp/products/switc
 
 with streamlit app to visualize the data:
 
-
+![スクリーンショット 2024-07-13 22 35 45](https://github.com/user-attachments/assets/eb1d2b38-e2b5-4c83-8c19-5d6f2badb7df)
 
 
 
