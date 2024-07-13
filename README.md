@@ -5,7 +5,12 @@
 [![Tests](https://github.com/kj-9/swb-meter/actions/workflows/test.yml/badge.svg)](https://github.com/kj-9/swb-meter/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/kj-9/swb-meter/blob/master/LICENSE)
 
-switch-bot meters server
+A cli tool to gather [switchbot meters'](https://www.switchbot.jp/products/switchbot-meter) data and writes to sqlite.
+
+
+with streamlit app to visualize the data:
+
+
 
 
 
