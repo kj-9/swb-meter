@@ -79,11 +79,13 @@ for alias in selected_aliases:
         label="Temperature",
         value=f"{latest['temperature']:.1f}℃",
         delta=f"{latest['temperature'] - previous['temperature']:.1f}℃",
+        delta_color="off"
     )
     col3.metric(
         label="Humidity",
         value=f"{latest['humidity']:.1f}%",
         delta=f"{latest['humidity'] - previous['humidity']:.1f}%",
+        delta_color="off"
     )
 
 
