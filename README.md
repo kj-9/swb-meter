@@ -130,8 +130,7 @@ Usage: swb-meter add [OPTIONS] ALIAS MAC_ADDRESS
 
   Add a SwitchBot meter to the master table with an alias.
 
-  Example: 
-
+  Example:
       $ swb-meter add "Living Room" 12:34:56:78:90:AB
 
 Options:
@@ -159,8 +158,7 @@ Usage: swb-meter ls [OPTIONS]
 
   List all SwitchBot meters in the master table.
 
-  Example: 
-
+  Example:
       $ swb-meter ls
 
 Options:
@@ -187,8 +185,7 @@ Usage: swb-meter rm [OPTIONS] MAC_ADDRESS
 
   Remove a SwitchBot meter from the master table.
 
-  Example: 
-
+  Example:
       $ swb-meter rm 12:34:56:78:90:AB
 
 Options:
@@ -220,9 +217,8 @@ Usage: swb-meter listen [OPTIONS]
   until all data is found and inserted once for each meter. The interval option
   specifies the time to wait between scans.
 
-  Example: 
-
-      $ swb-meter listen 
+  Example:
+      $ swb-meter listen
 
       $ swb-meter listen -t 10 -i 60 # Timeout 10 seconds, Interval 60 seconds
 
@@ -253,7 +249,8 @@ Usage: swb-meter streamlit [OPTIONS]
 
   Run the Streamlit app for visualizing the temperature data.
 
-  Example:  $ swb-meter app
+  Example:
+      $ swb-meter app
 
 Options:
   --help  Show this message and exit.

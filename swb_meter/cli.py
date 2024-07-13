@@ -126,9 +126,8 @@ def cli():
 def add_meter(alias, mac_address, upsert):
     """Add a SwitchBot meter to the master table with an alias.
 
-    Example:
     \b
-
+    Example:
         $ swb-meter add "Living Room" 12:34:56:78:90:AB
     """
 
@@ -151,9 +150,8 @@ def add_meter(alias, mac_address, upsert):
 def list_meters():
     """List all SwitchBot meters in the master table.
 
-    Example:
     \b
-
+    Example:
         $ swb-meter ls
     """
     m = get_meter_table()
@@ -173,9 +171,8 @@ def list_meters():
 def remove_meter(mac_address):
     """Remove a SwitchBot meter from the master table.
 
-    Example:
     \b
-
+    Example:
         $ swb-meter rm 12:34:56:78:90:AB
     """
 
@@ -214,11 +211,9 @@ def listen(timeout, interval, scans):
     The interval option specifies the time to wait between scans.
 
 
+    \b
     Example:
-    \b
-
         $ swb-meter listen
-    \b
 
         $ swb-meter listen -t 10 -i 60 # Timeout 10 seconds, Interval 60 seconds
     """
@@ -270,9 +265,9 @@ def listen(timeout, interval, scans):
 def run_app():
     """Run the Streamlit app for visualizing the temperature data.
 
-    Example:
     \b
-    $ swb-meter app
+    Example:
+        $ swb-meter app
     """
     # check if streamlit is installed
     # or suggest to install it via optional dependencies [streamlit]
