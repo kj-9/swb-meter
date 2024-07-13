@@ -1,6 +1,6 @@
 [project]
 name = "swb-meter"
-version = "0.1"
+version = "0.1.0-a"
 description = "switch-bot meters server"
 readme = "README.md"
 authors = [{name = "kj-9"}]
