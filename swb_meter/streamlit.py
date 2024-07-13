@@ -76,12 +76,12 @@ for alias in selected_aliases:
     col1.text(latest["created_at"])
 
     col2.metric(
-        label="温度",
+        label="Temperature",
         value=f"{latest['temperature']:.1f}℃",
         delta=f"{latest['temperature'] - previous['temperature']:.1f}℃",
     )
     col3.metric(
-        label="湿度",
+        label="Humidity",
         value=f"{latest['humidity']:.1f}%",
         delta=f"{latest['humidity'] - previous['humidity']:.1f}%",
     )
