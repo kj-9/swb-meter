@@ -18,7 +18,7 @@ with streamlit app to visualize the data:
 
 Install this tool using `pip`:
 ```bash
-pip install
+pip install swb-meter
 ```
 
 ## Usage
