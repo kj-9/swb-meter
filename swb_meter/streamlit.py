@@ -46,7 +46,7 @@ elif time_range == "1 Year":
     start_time = latest_created_at - timedelta(days=365)
 
 
-st.title("SwitchBot Meter Data Dashboard")
+st.title("SwitchBot Meter Dashboard")
 
 # alias
 aliases = df["alias"].unique()
@@ -89,7 +89,11 @@ for alias in selected_aliases:
 
 st.header("Time Series")
 
-labels = {"created_at": ""}
+line_kwargs = {
+    "labels": {"created_at": ""},
+    "markers": True,
+    "range_x": [start_time, latest_created_at],
+}
 
 # 温度の時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
@@ -98,9 +102,7 @@ fig = px.line(
     y="temperature",
     color="alias",
     title="Temperature",
-    labels=labels,
-    markers=True,
-    range_x=[start_time, latest_created_at],
+    **line_kwargs,
 )
 st.plotly_chart(fig)
 
@@ -111,7 +113,7 @@ fig = px.line(
     y="humidity",
     color="alias",
     title="Humidity",
-    labels=labels,
+    **line_kwargs,
 )
 st.plotly_chart(fig)
 
@@ -122,13 +124,14 @@ fig = px.line(
     y="battery",
     color="alias",
     title="Battery",
-    labels=labels,
+    **line_kwargs,
 )
 st.plotly_chart(fig)
 
 # RSSIの時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
-    filtered_df, x="created_at", y="rssi", color="alias", title="RSSI", labels=labels
+    filtered_df, x="created_at", y="rssi", color="alias", title="RSSI",
+    **line_kwargs,
 )
 st.plotly_chart(fig)
 
