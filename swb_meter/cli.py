@@ -93,11 +93,16 @@ def cli():
     The data will be inserted into the `Temperature` table in the database.
 
 
-    To visualize the data, run the Streamlit app in another terminal:
+    To visualize the data, you can run the Streamlit app in another terminal.
+    You need optional dependencies [streamlit] installed:
 
     \b
-        $ swb-meter streamlit
+        $ pip install swb-meter[streamlit]
 
+    then run the Streamlit app:
+    
+    \b
+        $ swb-meter streamlit
 
 
     By default, the log level is set to `INFO`.

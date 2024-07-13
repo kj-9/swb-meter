@@ -67,7 +67,12 @@ Usage: swb-meter [OPTIONS] COMMAND [ARGS]...
 
   The data will be inserted into the `Temperature` table in the database.
 
-  To visualize the data, run the Streamlit app in another terminal:
+  To visualize the data, you can run the Streamlit app in another terminal. You
+  need optional dependencies [streamlit] installed:
+
+      $ pip install swb-meter[streamlit]
+
+  then run the Streamlit app:
 
       $ swb-meter streamlit
 
