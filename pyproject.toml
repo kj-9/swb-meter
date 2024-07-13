@@ -23,7 +23,7 @@ CI = "https://github.com/kj-9/swb-meter/actions"
 swb-meter = "swb_meter.cli:cli"
 
 [project.optional-dependencies]
-front = ["streamlit", "plotly"]
+streamlit = ["streamlit", "plotly"]
 test = ["pytest", "pre-commit", "cogapp"]
 
 
