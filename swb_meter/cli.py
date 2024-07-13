@@ -100,7 +100,7 @@ def cli():
         $ pip install swb-meter[streamlit]
 
     then run the Streamlit app:
-    
+
     \b
         $ swb-meter streamlit
 
