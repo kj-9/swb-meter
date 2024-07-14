@@ -265,7 +265,7 @@ def run_app():
 
     \b
     Example:
-        $ swb-meter app
+        $ swb-meter streamlit
     """
     # check if streamlit is installed
     # or suggest to install it via optional dependencies [streamlit]
