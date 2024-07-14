@@ -6,66 +6,70 @@ import streamlit as st
 
 from swb_meter.db import get_db
 
-# SQLiteデータベースに接続
-conn = get_db().conn
 
-# データを読み込む
-query = """
-SELECT t.created_at, t.temperature, t.humidity,
-       t.battery, t.rssi, t.mac_address, coalesce(m.alias, "no alias") as alias
-FROM Temperature as t
-LEFT JOIN Meter as m using(mac_address)
-"""
-df = pd.read_sql_query(query, conn)
-df["created_at"] = pd.to_datetime(df["created_at"])  # タイムスタンプをdatetime型に変換
+def get_data():
+    query = """
+    SELECT t.created_at, t.temperature, t.humidity,
+        t.battery, t.rssi, t.mac_address, coalesce(m.alias, "no alias") as alias
+    FROM Temperature as t
+    LEFT JOIN Meter as m using(mac_address)
+    """
+    conn = get_db().conn
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+
+    df["created_at"] = pd.to_datetime(df["created_at"])  # convert to datetime
+
+    return df
 
 
-# 最新のデータの日時
-latest_created_at = df["created_at"].max()
+def get_start_time(df, time_range: str):
+    latest_created_at = df["created_at"].max()  # latest
 
-# タイムレンジの選択
-time_range = st.sidebar.selectbox(
+    if time_range == "1 Hour":
+        start_time = latest_created_at - timedelta(hours=1)
+    elif time_range == "1 Day":
+        start_time = latest_created_at - timedelta(days=1)
+    elif time_range == "1 Week":
+        start_time = latest_created_at - timedelta(weeks=1)
+    elif time_range == "1 Month":
+        start_time = latest_created_at - timedelta(days=30)
+    elif time_range == "1 Year":
+        start_time = latest_created_at - timedelta(days=365)
+
+    return [start_time, latest_created_at]
+
+
+# fetch data
+df = get_data()
+aliases = df["alias"].unique()  # aliases for meter devices
+
+
+# states
+selected_range = st.sidebar.selectbox(
     "Select Time Range",
     options=["1 Hour", "1 Day", "1 Week", "1 Month", "1 Year"],
     index=0,
 )
-
-
-# タイムレンジに基づいてデータをフィルタリング
-if time_range == "1 Hour":
-    start_time = latest_created_at - timedelta(hours=1)
-elif time_range == "1 Day":
-    start_time = latest_created_at - timedelta(days=1)
-elif time_range == "1 Week":
-    start_time = latest_created_at - timedelta(weeks=1)
-elif time_range == "1 Month":
-    start_time = latest_created_at - timedelta(
-        days=30
-    )  # 精確な月の日数を計算する場合は、他の方法を検討してください
-elif time_range == "1 Year":
-    start_time = latest_created_at - timedelta(days=365)
-
-
-st.title("SwitchBot Meter Dashboard")
-
-# alias
-aliases = df["alias"].unique()
 selected_aliases = st.sidebar.multiselect("Select alias", aliases, default=aliases)
 
+# drived state
+derived_time_range = get_start_time(df, selected_range)
+derived_df = df[df["alias"].isin(selected_aliases)]
 
-# フィルタリングされたデータフレーム
-filtered_df = df[df["alias"].isin(selected_aliases)]
+
+# ui -------------------------------------
+st.title("SwitchBot Meter Dashboard")
 
 
-# aliasごとに最新のデータを表示
-# 前回のデータを取得（2番目に新しいデータ）
-latest_data = filtered_df.groupby("alias").last()
-previous_data = filtered_df.groupby("alias").nth(-2).set_index("alias")
+# for calculating metrics, we need to get the latest data and the previous data
+latest_data = derived_df.groupby("alias").last()
+previous_data = derived_df.groupby("alias").nth(-2).set_index("alias")
 
-# aliasごとに最新のデータをメトリクスで表示（差分付き）
+# display latest metrics
 st.header("Latest Metrics")
 
-metrics = ["temperature", "humidity"]  # , "バッテリー", "RSSI"]
+metrics = ["temperature", "humidity"]  # , "battery", "rssi"]
 for alias in selected_aliases:
     col1, col2, col3 = st.columns([1, 1, 1], gap="large", vertical_alignment="center")
 
@@ -94,12 +98,11 @@ st.header("Time Series")
 line_kwargs = {
     "labels": {"created_at": ""},
     "markers": True,
-    "range_x": [start_time, latest_created_at],
+    "range_x": derived_time_range,
 }
 
-# 温度の時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
-    filtered_df,
+    derived_df,
     x="created_at",
     y="temperature",
     color="alias",
@@ -108,9 +111,8 @@ fig = px.line(
 )
 st.plotly_chart(fig)
 
-# 湿度の時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
-    filtered_df,
+    derived_df,
     x="created_at",
     y="humidity",
     color="alias",
@@ -119,9 +121,8 @@ fig = px.line(
 )
 st.plotly_chart(fig)
 
-# バッテリー残量の時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
-    filtered_df,
+    derived_df,
     x="created_at",
     y="battery",
     color="alias",
@@ -130,9 +131,8 @@ fig = px.line(
 )
 st.plotly_chart(fig)
 
-# RSSIの時系列グラフ（2つのセンサーを1つのグラフに）
 fig = px.line(
-    filtered_df,
+    derived_df,
     x="created_at",
     y="rssi",
     color="alias",
@@ -140,6 +140,3 @@ fig = px.line(
     **line_kwargs,
 )
 st.plotly_chart(fig)
-
-# 接続を閉じる
-conn.close()
