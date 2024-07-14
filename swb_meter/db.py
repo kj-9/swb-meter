@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from pathlib import Path
 
 from sqlite_utils import Database
@@ -28,3 +29,14 @@ def get_meter_table():
     t = db["Meter"]
 
     return t
+
+
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+def datetime_to_str(datetime_obj: datetime) -> str:
+    return datetime_obj.strftime(TIMESTAMP_FORMAT)
+
+
+def str_to_datetime(datetime_str: str) -> datetime:
+    return datetime.strptime(datetime_str, TIMESTAMP_FORMAT)

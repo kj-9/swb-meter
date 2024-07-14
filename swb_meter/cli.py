@@ -5,7 +5,7 @@ from datetime import datetime
 import click
 from bleak import BleakScanner
 
-from swb_meter.db import get_meter_table, get_temperature_table
+from swb_meter.db import datetime_to_str, get_meter_table, get_temperature_table
 from swb_meter.logger import logger
 from swb_meter.parser import parse_advertisement_data
 
@@ -40,9 +40,7 @@ class DataHandler:
                 parsed_data.rssi
             ),  # `objc._pythonify.OC_PythonLong`型でエラーが出るのでintに変換
             "tx_power": parsed_data.tx_power,
-            "created_at": datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),  # タイムスタンプを追加
+            "created_at": datetime_to_str(datetime.now()),
         }
 
         self.t.insert(insert_dict)

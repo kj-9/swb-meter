@@ -1,21 +1,31 @@
-from datetime import timedelta
+import time
+from datetime import datetime, timedelta
 
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from swb_meter.db import get_db
+from swb_meter.db import datetime_to_str, get_db, str_to_datetime
 
 
-def get_data():
+def get_data_in_range(from_time: str, to_time: str):
+    """Get data from the database.
+
+    by default, from_time is set to an empty string,
+    which means it will get all the data which has some value in the created_at column.
+
+    use this function to get the latest data by setting from_time to the last ingested time.
+    """
+
     query = """
     SELECT t.created_at, t.temperature, t.humidity,
         t.battery, t.rssi, t.mac_address, coalesce(m.alias, "no alias") as alias
     FROM Temperature as t
     LEFT JOIN Meter as m using(mac_address)
+    WHERE ? < t.created_at AND t.created_at <= ?
     """
     conn = get_db().conn
-    df = pd.read_sql_query(query, conn)
+    df = pd.read_sql_query(query, conn, params=(from_time, to_time))
     conn.close()
 
     df["created_at"] = pd.to_datetime(df["created_at"])  # convert to datetime
@@ -23,44 +33,55 @@ def get_data():
     return df
 
 
-def get_start_time(df, time_range: str):
-    latest_created_at = df["created_at"].max()  # latest
-
+def get_chart_time_range(end_time: datetime, time_range: str):
     if time_range == "1 Hour":
-        start_time = latest_created_at - timedelta(hours=1)
+        start_time = end_time - timedelta(hours=1)
     elif time_range == "1 Day":
-        start_time = latest_created_at - timedelta(days=1)
+        start_time = end_time - timedelta(days=1)
     elif time_range == "1 Week":
-        start_time = latest_created_at - timedelta(weeks=1)
+        start_time = end_time - timedelta(weeks=1)
     elif time_range == "1 Month":
-        start_time = latest_created_at - timedelta(days=30)
+        start_time = end_time - timedelta(days=30)
     elif time_range == "1 Year":
-        start_time = latest_created_at - timedelta(days=365)
+        start_time = end_time - timedelta(days=365)
 
-    return [start_time, latest_created_at]
-
-
-# fetch data
-df = get_data()
-aliases = df["alias"].unique()  # aliases for meter devices
+    return [start_time, end_time]
 
 
 # states
+if "refreshed_at" not in st.session_state:
+    st.session_state["refreshed_at"] = datetime_to_str(datetime.now())
+
+refreshed_at = st.session_state.refreshed_at
+
+
+if "df" not in st.session_state:
+    # all data until now
+    st.session_state["df"] = get_data_in_range("", refreshed_at)
+
+df = st.session_state.df
+
+refresh = st.sidebar.toggle("Auto Refresh Data", False)
 selected_range = st.sidebar.selectbox(
     "Select Time Range",
     options=["1 Hour", "1 Day", "1 Week", "1 Month", "1 Year"],
     index=0,
 )
-selected_aliases = st.sidebar.multiselect("Select alias", aliases, default=aliases)
 
-# drived state
-derived_time_range = get_start_time(df, selected_range)
+aliases = df["alias"].unique()  # aliases for meter devices
+selected_aliases = st.sidebar.multiselect(
+    "Select alias", aliases, default=aliases, key="aliases"
+)
+
+
+# derived from states
+derived_time_range = get_chart_time_range(str_to_datetime(refreshed_at), selected_range)
 derived_df = df[df["alias"].isin(selected_aliases)]
-
+aliases = df["alias"].unique()  # aliases for meter devices
 
 # ui -------------------------------------
 st.title("SwitchBot Meter Dashboard")
-
+st.write(f"Last refreshed at: {refreshed_at}")
 
 # for calculating metrics, we need to get the latest data and the previous data
 latest_data = derived_df.groupby("alias").last()
@@ -140,3 +161,18 @@ fig = px.line(
     **line_kwargs,
 )
 st.plotly_chart(fig)
+
+
+# refresh data
+while refresh:
+    now = datetime_to_str(datetime.now())
+    new_df = get_data_in_range(refreshed_at, now)
+
+    if new_df.empty:
+        time.sleep(10)  # polling interval for new data
+        continue
+
+    st.session_state.refreshed_at = now
+    st.session_state.df = pd.concat([df, new_df])
+
+    st.rerun()  # refresh the page when new data is available
